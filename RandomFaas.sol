@@ -11,7 +11,6 @@ contract RandomFaas {
 
 	uint public counts;
 	uint public limit;
-	uint counttime;
 	uint countdown; //in block
 	address[] depositAdderesses;
 
@@ -35,16 +34,17 @@ contract RandomFaas {
 
 	event quitActor(address victim);
 	event startCountin(address group, uint startTime);
+	event NeedNewGroup(uint counts);
 	event randomOutput(address group, uint randomNumber);
 
-	function RandomFaas (address _owner, uint _counttime, uint _limit) 
+	function RandomFaas (address _owner, uint _countdown, uint _limit) 
 	{
 		require(_owner != address(0));
 		require(_counttime != 0);
 		require(_limit != 0);
 
 		owner = _owner;
-		counttime = _counttime;
+		countdown = _countdown;
 		limit = _limit;
 	}
 	
@@ -77,6 +77,9 @@ contract RandomFaas {
 	function stakeJoin () public payable
 	{
 		require(_operator != address(0));
+		require(GroupList[counts].length<limit);
+		event NeedNewGroup(counts);
+		
 		updateValue(RandomGroup[counts][msg.sender],0,0,msg.value);
 		GroupList[counts].push(msg.sender);
 
