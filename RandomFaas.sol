@@ -1,9 +1,10 @@
 pragma solidity>=0.4.20;
 
-/**
- * The random faas provide the interface that smooths the random function 
- * and make it simpler for users to call 
- * Author : waylon(waylon@genaro.network)
+/*
+   The random faas provide the interface that smooths the random function 
+   and make it simpler for users to call 
+   Author : waylon(waylon@genaro.network)
+  
  */
 
 contract RandomFaas {
@@ -66,11 +67,9 @@ contract RandomFaas {
 	}
 	
 	
-	function createGroup (address _operator) public
+	function createGroup () public
 	{
-		require(_operator != address(0));
-		Req[] storage group = RandomGroup[counts][msg.sender];
-		address[] storage list = GroupList[counts];
+		updateValue(RandomGroup[counts][msg.sender],0,0,0);
 		counts++;
 	}
 
@@ -204,7 +203,8 @@ function ecrecovery(bytes32 hash, bytes memory sig) public returns (address) {
 
 		for(uint cnt=0;cnt<_bounter.length;cnt++){
 			_addr = _bounter[cnt];
-			_addr.transfer(_payback);
+			_addr.call.value(_payback).gas(2300); //no sure about the result, need to check
+			//_addr.transfer(_payback); //why it can not work?!
 		}
 	}
 	
@@ -217,17 +217,18 @@ function ecrecovery(bytes32 hash, bytes memory sig) public returns (address) {
 		// return all the money back.
 		for(uint cnt = 0; cnt <GroupList[_count].length;cnt++){
 			_addr = GroupList[_count][cnt];
-			_reimbursement = RandomGroup[_count][_addr].value;
+			_reimbursement = RandomGroup[_count][_addr][RandomGroup[_count][msg.sender].length].value;
 
 			if(_reimbursement != 0){
-			 	_addr.send(_reimbursement);
+				_addr.call.value(_reimbursement).gas(2300); //same here
+			 	//_addr.send(_reimbursement);
 			}
 		}
 		
 	}
 	
 	modifier only(address _addr) { 
-		require(msg.sender = _addr);
+		require(msg.sender == _addr);
 		_; 
 	}
 
