@@ -78,7 +78,7 @@ contract RandomFaas {
 	{
 		require(_operator != address(0));
 		require(GroupList[counts].length<limit);
-		event NeedNewGroup(counts);
+		NeedNewGroup(counts);
 		
 		updateValue(RandomGroup[counts][msg.sender],0,0,msg.value);
 		GroupList[counts].push(msg.sender);
